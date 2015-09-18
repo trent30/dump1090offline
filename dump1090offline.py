@@ -175,6 +175,8 @@ def draw_flight(zoom, x, y, offset_x, offset_y):
 		width = 0
 		pygame.draw.circle(screen, color, pos, FLIGHT_DOT_SIZE, width)
 		pygame.draw.circle(screen, color, pos, FLIGHT_DOT_SIZE + 2, 1)
+		if i['flight'] == None:
+			i['flight']=''
 		if AFF_NAME_FLIGHT:
 			affiche_texte(i['flight'], pos)
 

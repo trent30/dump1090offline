@@ -29,7 +29,7 @@ class bdd():
 		SELECT d.time, h.value, f.value, d.lon, d.lat, d.altitude, d.speed
 		FROM hex h, data d
 		left join flight_hex fh on fh.hex = h.id
-		left join flight f on f.id = fh.flight
+		left join flight f on f.id = d.flight
 		WHERE h.id = d.hex
 		order by d.time asc
 		""")
