@@ -34,6 +34,7 @@ FONT_SIZE = 20
 
 SPEED = 1
 REPLAY = False
+DELAY = 0.01
 #~ ---------------------------------------------------------
 
 # Données additionnelles pour les fichiers en provenance de foxtrotgps
@@ -222,7 +223,7 @@ b = db.bdd()
 if __name__ == "__main__":
 	cpt = 0
 	while 1:
-		time.sleep(0.01)
+		time.sleep(DELAY)
 		cpt += 1
 		if cpt > 100 / SPEED:
 			cpt = 0
@@ -230,7 +231,8 @@ if __name__ == "__main__":
 				data = b.get_data()
 			else:
 				data = get_data_from_dump1090()
-				b.insert_data(data)
+				if data != None:
+					b.insert_data(data)
 			draw(ZOOM, X, Y, OFFSET_X, OFFSET_Y)
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT or (event.type == KEYDOWN and event.key == K_q):
@@ -252,9 +254,11 @@ if __name__ == "__main__":
 				if REPLAY:
 					REPLAY = False
 					SPEED = 1
+					DELAY = 0
 				else:
 					REPLAY = True
 					SPEED = 20
+					DELAY = 0.01
 			if event.type == KEYDOWN and event.key == K_n:
 				if AFF_NAME_FLIGHT:
 					AFF_NAME_FLIGHT = False
