@@ -16,7 +16,7 @@ MAPS = ['googlemaps', 'googlesat', 'OSM']
 SIZE_IMG = 256
 MAP = MAPS[0]
 
-resolution = width, height = 1024, 768
+resolution = width, height = 1024, 570
 window_title = '1090 - offline'
 
 #~ Point de départ d'affichage de la map :
@@ -31,6 +31,9 @@ PAS = 10
 FLIGHT_DOT_SIZE = 2
 AFF_NAME_FLIGHT = True
 FONT_SIZE = 20
+
+SPEED = 1
+REPLAY = False
 #~ ---------------------------------------------------------
 
 # Données additionnelles pour les fichiers en provenance de foxtrotgps
@@ -91,6 +94,7 @@ import time
 import sys
 from urllib import urlopen
 import json
+import db
 
 def get_data_from_dump1090():
 	try:
@@ -160,26 +164,32 @@ def draw_flight(zoom, x, y, offset_x, offset_y):
 	if data == None:
 		return
 	for i in data:
-		#~ print i['hex'], i['flight'], i['lon'], i['lat'], i['altitude'], i['speed']
 		color = 0,0,0
 		if zoom in tuile:
 			pos = convert(i, zoom, x, y, offset_x, offset_y)
-			#~ print i['lon'], i['lat'], '->', pos
 		else:
 			# Si on ne possède pas les données relatives aux 'tuiles'
 			# alors on ne peut pas afficher une position
-			#~ print 'No data'
 			pos = -42, -42
 		width = 0
 		pygame.draw.circle(screen, color, pos, FLIGHT_DOT_SIZE, width)
 		pygame.draw.circle(screen, color, pos, FLIGHT_DOT_SIZE + 2, 1)
 		if AFF_NAME_FLIGHT:
 			affiche_texte(i['flight'], pos)
-	#~ print '-'*80
 
+def aff_time():
+	t = 0
+	if data == None:
+		return
+	for i in data:
+		if i['time'] > t:
+			t = i['time']
+	pygame.draw.rect(screen, (255,255,255), (0, height - FONT_SIZE * 2, 180, height), 0)
+	affiche_texte(time.strftime("%a, %d %b %Y %H:%M:%S", time.gmtime(t)), (0, height - FONT_SIZE) )
+	
 def draw(zoom, x, y, offset_x, offset_y):
 	largeur = width / SIZE_IMG + 2
-	hauteur = height / SIZE_IMG + 1
+	hauteur = height / SIZE_IMG + 2
 	for i in xrange(hauteur):
 		for j in xrange(largeur):
 				filename = PATH + '/' + MAP + '/' + str(ZOOM) + '/' + str(x + j - 1) + '/' + str(y + i - 1) + '.png'
@@ -187,14 +197,14 @@ def draw(zoom, x, y, offset_x, offset_y):
 					try :
 						img = pygame.image.load(filename).convert()
 						CACHE[filename] = img
-						#~ print 'Chargement de %s' % filename
 					except:
-						#~ print 'Erreur de chargement %s' % filename
 						pass
 				c = ((j - 1) * SIZE_IMG + offset_x, (i - 1) * SIZE_IMG + offset_y)
 				screen.blit(CACHE.get(filename, CACHE['blank.png']), c)
 	draw_flight(zoom, x, y, offset_x, offset_y)
 	aff_list_flight()
+	if REPLAY:
+		aff_time()
 	pygame.display.flip()
 
 pygame.init()
@@ -207,16 +217,20 @@ CACHE['blank.png'] = img
 
 draw(ZOOM, X, Y, OFFSET_X, OFFSET_Y)
 pygame.display.flip()
-
+b = db.bdd()
 
 if __name__ == "__main__":
 	cpt = 0
 	while 1:
 		time.sleep(0.01)
 		cpt += 1
-		if cpt > 100:
+		if cpt > 100 / SPEED:
 			cpt = 0
-			data = get_data_from_dump1090()
+			if REPLAY:
+				data = b.get_data()
+			else:
+				data = get_data_from_dump1090()
+				b.insert_data(data)
 			draw(ZOOM, X, Y, OFFSET_X, OFFSET_Y)
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT or (event.type == KEYDOWN and event.key == K_q):
@@ -226,6 +240,21 @@ if __name__ == "__main__":
 			if event.type == KEYDOWN and event.key == K_m:
 				next_map()
 				draw(ZOOM, X, Y, OFFSET_X, OFFSET_Y)
+				print pygame.key.get_mods()
+			if event.type == KEYDOWN and event.key == K_s:
+				if pygame.key.get_mods() == 4096: # pas de shift
+					SPEED += 10
+				else:
+					SPEED -= 10
+					if SPEED <= 0:
+						SPEED = 1
+			if event.type == KEYDOWN and event.key == K_r:
+				if REPLAY:
+					REPLAY = False
+					SPEED = 1
+				else:
+					REPLAY = True
+					SPEED = 20
 			if event.type == KEYDOWN and event.key == K_n:
 				if AFF_NAME_FLIGHT:
 					AFF_NAME_FLIGHT = False
