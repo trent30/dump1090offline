@@ -138,7 +138,7 @@ def aff_list_flight():
 	y = 20
 	pygame.draw.rect(screen, (255,255,255), (0, 0, 400 , y + pas_y * len(data)), 0)
 	for i in l:
-		affiche_texte(i, (x,y) )
+		affiche_texte(i.upper(), (x,y) )
 		x += pas_x
 	for i in data:
 		x = 0
@@ -227,7 +227,7 @@ if __name__ == "__main__":
 	while 1:
 		time.sleep(DELAY)
 		cpt += 1
-		if cpt > 100 / SPEED:
+		if cpt > 1000 / SPEED:
 			cpt = 0
 			if REPLAY:
 				data = b.get_data()
@@ -247,20 +247,21 @@ if __name__ == "__main__":
 				print pygame.key.get_mods()
 			if event.type == KEYDOWN and event.key == K_s:
 				if pygame.key.get_mods() == 4096: # pas de shift
-					SPEED += 10
+					SPEED = SPEED * 2
 				else:
-					SPEED -= 10
+					SPEED = SPEED / 2
 					if SPEED <= 0:
 						SPEED = 1
+				print SPEED
 			if event.type == KEYDOWN and event.key == K_r:
 				if REPLAY:
 					REPLAY = False
 					SPEED = 1
-					DELAY = 0
+					DELAY = 0.01
 				else:
 					REPLAY = True
 					SPEED = 20
-					DELAY = 0.01
+					DELAY = 0
 			if event.type == KEYDOWN and event.key == K_n:
 				if AFF_NAME_FLIGHT:
 					AFF_NAME_FLIGHT = False
