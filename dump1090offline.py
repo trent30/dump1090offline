@@ -261,7 +261,10 @@ if __name__ == "__main__":
 					REPLAY = False
 					SPEED = 1
 					DELAY = 0.01
+					draw(ZOOM, X, Y, OFFSET_X, OFFSET_Y)
 				else:
+					affiche_texte('Loading...', (0, height - FONT_SIZE) )
+					pygame.display.flip()
 					REPLAY = True
 					SPEED = 20
 					DELAY = 0
@@ -270,6 +273,7 @@ if __name__ == "__main__":
 					AFF_NAME_FLIGHT = False
 				else:
 					AFF_NAME_FLIGHT = True
+				draw(ZOOM, X, Y, OFFSET_X, OFFSET_Y)
 			if event.type == KEYDOWN and event.key == K_l:
 				if AFF_LIST_FLIGHT:
 					AFF_LIST_FLIGHT = False
