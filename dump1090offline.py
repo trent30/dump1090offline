@@ -30,6 +30,7 @@ OFFSET_Y = 0
 PAS = 10
 FLIGHT_DOT_SIZE = 2
 AFF_NAME_FLIGHT = True
+AFF_LIST_FLIGHT = True
 FONT_SIZE = 20
 
 SPEED = 1
@@ -129,6 +130,8 @@ def convert(d, zoom, x, y, offset_x, offset_y):
 	return int(x), int(y)
 
 def aff_list_flight():
+	if not AFF_LIST_FLIGHT:
+		return
 	if data == None:
 		return
 	pas_y = 15
@@ -267,6 +270,11 @@ if __name__ == "__main__":
 					AFF_NAME_FLIGHT = False
 				else:
 					AFF_NAME_FLIGHT = True
+			if event.type == KEYDOWN and event.key == K_l:
+				if AFF_LIST_FLIGHT:
+					AFF_LIST_FLIGHT = False
+				else:
+					AFF_LIST_FLIGHT = True
 				draw(ZOOM, X, Y, OFFSET_X, OFFSET_Y)
 			if event.type == KEYDOWN and event.key == K_a:
 				ZOOM -= 1
