@@ -244,6 +244,18 @@ if __name__ == "__main__":
 				sys.exit()
 			if event.type == KEYDOWN and event.key == K_e:
 				pass
+			if event.type == KEYDOWN and event.key == K_h:
+				if REPLAY:
+					if pygame.key.get_mods() == 4096: # pas de shift
+						b.forward(3600)
+					else:
+						b.backward(3600)
+			if event.type == KEYDOWN and event.key == K_d:
+				if REPLAY:
+					if pygame.key.get_mods() == 4096: # pas de shift
+						b.forward(86400)
+					else:
+						b.backward(86400)
 			if event.type == KEYDOWN and event.key == K_m:
 				next_map()
 				draw(ZOOM, X, Y, OFFSET_X, OFFSET_Y)
@@ -257,17 +269,21 @@ if __name__ == "__main__":
 						SPEED = 1
 				print SPEED
 			if event.type == KEYDOWN and event.key == K_r:
-				if REPLAY:
-					REPLAY = False
-					SPEED = 1
-					DELAY = 0.01
-					draw(ZOOM, X, Y, OFFSET_X, OFFSET_Y)
+				if pygame.key.get_mods() == 4096: # pas de shift
+					if REPLAY:
+						REPLAY = False
+						SPEED = 1
+						DELAY = 0.01
+						draw(ZOOM, X, Y, OFFSET_X, OFFSET_Y)
+					else:
+						affiche_texte('Loading...', (0, height - FONT_SIZE) )
+						pygame.display.flip()
+						REPLAY = True
+						SPEED = 20
+						DELAY = 0
 				else:
-					affiche_texte('Loading...', (0, height - FONT_SIZE) )
-					pygame.display.flip()
-					REPLAY = True
-					SPEED = 20
-					DELAY = 0
+					b.cpt = 0
+					b.actual_flight = {}
 			if event.type == KEYDOWN and event.key == K_n:
 				if AFF_NAME_FLIGHT:
 					AFF_NAME_FLIGHT = False

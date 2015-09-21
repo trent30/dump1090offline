@@ -13,6 +13,7 @@ class bdd():
 		self.cache['GPS'] = {}
 		self.cpt = 0
 		self.all_data = None
+		self.actual_flight = {}
 		try:
 			self.c.execute('SELECT count(*) FROM flight')
 		except:
@@ -49,12 +50,33 @@ class bdd():
 				new_dico[i] = self.actual_flight[i]
 		self.actual_flight = new_dico
 	
+	def forward(self, interval):
+		self.actual_flight = {}
+		actual_time = self.tuple_to_dico(self.all_data[self.cpt])['time']
+		while (self.tuple_to_dico(self.all_data[self.cpt])['time'] - actual_time < interval):
+			self.cpt += 1
+			if len(self.all_data) <= self.cpt:
+				return
+	
+	def backward(self, interval):
+		self.actual_flight = {}
+		actual_time = self.tuple_to_dico(self.all_data[self.cpt])['time']
+		while (actual_time - self.tuple_to_dico(self.all_data[self.cpt])['time'] < interval * 1.5):
+			self.cpt -= 1
+			if self.cpt <=0 :
+				self.cpt = 0
+				return
+		self.cpt -= 10
+		if self.cpt <=0 :
+			self.cpt = 0
+		
 	def get_data(self):
 		if self.all_data == None:
 			self.all_data = self.get_all_data()
 			self.actual_flight = {}
-		if len(self.all_data) == self.cpt:
-			return
+		if len(self.all_data) <= self.cpt:
+			self.cpt = 0
+			self.actual_flight = {}
 		d = self.tuple_to_dico(self.all_data[self.cpt])
 		self.actual_flight[d['hex']] = d
 		self.clean_actual_fly(d['time'])
