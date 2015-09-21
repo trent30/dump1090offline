@@ -21,9 +21,9 @@ window_title = '1090 - offline'
 
 #~ Point de départ d'affichage de la map :
 #~ Correspond au fichier PATH/MAP/ZOOM/X/Y.png
-ZOOM = 8
-X = 125
-Y = 87
+ZOOM = 7
+X = 63
+Y = 43
 OFFSET_X = 0
 OFFSET_Y = 0
 
@@ -40,8 +40,12 @@ DELAY = 0.01
 
 # Données additionnelles pour les fichiers en provenance de foxtrotgps
 # Méhodologie « doigt mouillé » :
-# J'ai cliqué avec la souris dans les angles de l'image pour avoir les coordonnées GPS
+# Après avoir marqué les angles de certaines images, j'ai rechargé foxtrotgps et cliqué avec la souris dans les angles de l'image pour avoir les coordonnées GPS
 # Erreur de l'ordre du pixel
+#
+# Pour les latitudes autour des 49° cela fonctionne à peu près mais plus on s'écarte (vers le nord ou le sud) plus les erreurs augmentent, la convertion n'est pas linéaire.
+# À FAIRE : trouver une fonction qui corrige les erreurs de latitude.
+
 tuile = {}
 
 tuile[8] = {}					# niveau de zoom 8
@@ -117,7 +121,15 @@ def next_map():
 	else:
 		MAP = MAPS[i]
 	print 'source %s' % MAP
-
+	
+def coordonnees_gps(zoom, x, y, offset_x, offset_y, m_x, m_y):
+	try:
+		longitude = origine_X(zoom, x, offset_x) + (m_x + offset_x) * tuile[zoom]['x_size'] / SIZE_IMG
+		latitude = origine_Y(zoom, y, offset_y) + (m_y + offset_y) * tuile[zoom]['y_size'] / SIZE_IMG
+		return (latitude, longitude)
+	except:
+		return None
+	
 def origine_X(zoom, x, offset_x):
 	return tuile[zoom]['x'] + (x - tuile[zoom]['x_num']) * tuile[zoom]['x_size'] - offset_x * tuile[zoom]['x_size'] / SIZE_IMG
 
@@ -333,6 +345,7 @@ if __name__ == "__main__":
 			if event.type == MOUSEBUTTONDOWN and event.button == 1:
 				MOUSE_X = event.pos[0]
 				MOUSE_Y = event.pos[1]
+				print coordonnees_gps(ZOOM, X, Y, OFFSET_X, OFFSET_Y, MOUSE_X, MOUSE_Y)
 			if event.type == MOUSEMOTION and event.buttons[0] == 1:
 					OFFSET_X -= MOUSE_X - event.pos[0]
 					OFFSET_Y -= MOUSE_Y - event.pos[1]
