@@ -16,7 +16,7 @@ MAPS = ['googlemaps', 'googlesat', 'OSM']
 SIZE_IMG = 256
 MAP = MAPS[0]
 
-resolution = width, height = 1024, 570
+resolution = width, height = 1920, 1020
 window_title = '1090 - offline'
 
 #~ Point de départ d'affichage de la map :
@@ -43,7 +43,7 @@ DELAY = 0.01
 # Après avoir marqué les angles de certaines images, j'ai rechargé foxtrotgps et cliqué avec la souris dans les angles de l'image pour avoir les coordonnées GPS
 # Erreur de l'ordre du pixel
 #
-# Pour les latitudes autour des 49° cela fonctionne à peu près mais plus on s'écarte (vers le nord ou le sud) plus les erreurs augmentent, la convertion n'est pas linéaire.
+# Pour les latitudes autour des 49° cela fonctionne à peu près mais plus on s'écarte (vers le nord ou le sud) plus les erreurs augmentent, la conversion n'est pas linéaire.
 # À FAIRE : trouver une fonction qui corrige les erreurs de latitude.
 
 tuile = {}
@@ -206,8 +206,8 @@ def aff_time():
 	affiche_texte(time.strftime("%a, %d %b %Y %H:%M:%S", time.gmtime(t)), (0, height - FONT_SIZE) )
 	
 def draw(zoom, x, y, offset_x, offset_y):
-	largeur = width / SIZE_IMG + 2
-	hauteur = height / SIZE_IMG + 2
+	largeur = width / SIZE_IMG + 3
+	hauteur = height / SIZE_IMG + 3
 	for i in xrange(hauteur):
 		for j in xrange(largeur):
 				filename = PATH + '/' + MAP + '/' + str(ZOOM) + '/' + str(x + j - 1) + '/' + str(y + i - 1) + '.png'
