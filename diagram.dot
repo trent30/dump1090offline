@@ -1,0 +1,9 @@
+digraph G {
+	d -> h;
+	h -> do;
+	f -> do [ label="~Maps"];
+	h [label="http:\/\/127.0.0.1:8080/dump1090/data.json", shape=box];
+	d [label="dump1090 --metric --interactive --net --aggressive", shape=box];
+	f [label="foxtrotgps", shape=box];
+	do [label="dump1090offline", shape=box];
+}
